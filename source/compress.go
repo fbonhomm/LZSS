@@ -22,8 +22,7 @@ func (c *LZSS) SearchPattern(data []byte, pattern []byte) (int, int) {
 }
 
 // AddToCompressData add encoded data in final byte array
-func (c *LZSS) AddToCompressData(compressData []byte, tmpI uint32, spaceTaken uint32) []byte {
-	tmpB := make([]byte, binary.MaxVarintLen32)
+func (c *LZSS) AddToCompressData(compressData []byte, tmpI uint32, spaceTaken uint32, encoded bool) []byte {
 	length := len(compressData)
 
 	if spaceTaken != 0 {
@@ -34,9 +33,13 @@ func (c *LZSS) AddToCompressData(compressData []byte, tmpI uint32, spaceTaken ui
 		tmpI += uint32(lastElement)
 	}
 
-	n := c.PutUint32ToBuf(tmpB, tmpI)
-	fmt.Println(tmpB, n, tmpB[:n])
-	tmpB = tmpB[:n]
+	tmpB, _ := c.PutUint32ToBuf(tmpI)
+
+	if encoded == true {
+		tmpB = tmpB[:3]
+	} else {
+		tmpB = tmpB[:2]
+	}
 	compressData = append(compressData, tmpB...)
 
 	return compressData
@@ -64,43 +67,36 @@ func (c *LZSS) Compress(rawData []byte) []byte {
 
 	c.Init()
 
-	fmt.Println(rawData)
+	fmt.Println("Compress...")
 	for i := 0; i < rawDataSize; i++ {
 		tmpI = 0
 		length = 0
 
-		fmt.Printf("Index :%d, Character: %p\n", i, rawData[i])
 		if spaceTaken == 8 {
 			spaceTaken = 0
 		}
 
 		if i >= c.MinMatch {
 			position, length = c.SearchPattern(
-				c.GetChunkByte(rawData, i-c.DictSize, i),
-				c.GetChunkByte(rawData, i, i+c.MaxMatch))
+				c.GetChunkByte(rawData, i - c.DictSize, i),
+				c.GetChunkByte(rawData, i, i + c.MaxMatch))
 		}
 
 		if length == 0 {
 			tmpI = uint32(rawData[i])
 			tmpI <<= 1
 			tmpI++
-			fmt.Printf("Character encoded: %p\n", tmpI)
-			compressData = AddToCompressData(compressData, tmpI, spaceTaken)
-			fmt.Println(compressData)
+			compressData = c.AddToCompressData(compressData, tmpI, spaceTaken, false)
 		} else {
-			fmt.Println("FOUND PATTERN")
-			tmpI = uint32(length-c.MinMatch) << uint32(c.Position)
+			//fmt.Println("Index: ", i, ", Position: ", position, ", Length: ", length, ", SpaceTaken: ", spaceTaken)
+			tmpI = uint32(length - c.MinMatch) << uint32(c.Position)
 			tmpI += uint32(position)
 			tmpI <<= 1
-			fmt.Printf("Character encoded: %p\n", tmpI)
-			fmt.Printf("spaceTaken: %p\n", spaceTaken)
-			compressData = AddToCompressData(compressData, tmpI, spaceTaken)
-			fmt.Println(compressData)
+			compressData = c.AddToCompressData(compressData, tmpI, spaceTaken, true)
 			i += length - 1
 		}
 
 		spaceTaken++
-		fmt.Printf("\n\n")
 	}
 
 	return RemoveLastElementUseless(compressData)
