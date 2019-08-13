@@ -1,6 +1,7 @@
 package source
 
 import (
+	"encoding/binary"
 	"log"
 	"math"
 )
@@ -28,7 +29,7 @@ func (c *LZSS) Init() {
 	}
 
 	c.DictSize = int(math.Pow(2, float64(c.Position)))
-	c.MaxMatch = int(math.Pow(2, float64(c.Length))) + c.MinMatch
+	c.MaxMatch = int(math.Pow(2, float64(c.Length)) - 1) + c.MinMatch
 	c.NumBytes = int(math.Ceil(float64(c.Position+c.Length) / 8))
 
 	if c.MinMatch > c.MaxMatch {
@@ -43,8 +44,9 @@ func (c *LZSS) Init() {
 }
 
 // PutUint32ToBuf convert uint32 to []byte
-func (c *LZSS) PutUint32ToBuf(buf []byte, x uint32) int {
+func (c *LZSS) PutUint32ToBuf(x uint32) ([]byte, int) {
 	i := 0
+	buf := make([]byte, binary.MaxVarintLen32)
 
 	for x > 0xFF {
 		buf[i] = byte(x)
@@ -53,11 +55,7 @@ func (c *LZSS) PutUint32ToBuf(buf []byte, x uint32) int {
 	}
 	buf[i] = byte(x)
 
-	if i == 0 {
-		i++
-	}
-
-	return i + 1
+	return buf, i + 1
 }
 
 // PutByteToUint32 convert []byte to uint32
