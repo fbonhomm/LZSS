@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 	"fmt"
 	"math"
-	//"unsafe"
 )
 
 // GetFlag return the encoded flag
@@ -18,13 +17,11 @@ func GetFlag(chunk, spaceTaken uint32) int {
 }
 
 // GetEncodedData return feature encoded pattern
-func (c *LZSS) GetEncodedData(chunk, spaceTaken uint32) (uint32, uint32) {
-	chunk >>= spaceTaken + 1
-
+func (c *LZSS) GetEncodedData(chunk uint32) (int, int) {
 	position := chunk & 0x0FFF
 	length := (chunk&0xF000)>>uint32(c.Position) + uint32(c.MinMatch)
 
-	return position, length
+	return int(position), int(length)
 }
 
 // Decompress decompress on using lzss
@@ -32,10 +29,11 @@ func (c *LZSS) Decompress(compressData []byte) []byte {
 	compressDataSize := binary.Size(compressData)
 	var rawData []byte
 	var spaceTaken uint32
+	var sizeRaw int
 
 	c.Init()
 
-	fmt.Println(compressData)
+	fmt.Println("Decompress...")
 	for i := 0; i < compressDataSize; i++ {
 		if spaceTaken == 8 {
 			spaceTaken = 0
@@ -47,18 +45,22 @@ func (c *LZSS) Decompress(compressData []byte) []byte {
 
 		if flag == 1 {
 			rawData = append(rawData, byte(chunk>>(spaceTaken+1)))
+			sizeRaw++
 		} else {
 			if i+1 >= compressDataSize {
 				break
 			}
-			position, length := c.GetEncodedData(chunk, spaceTaken)
-			rawData = append(rawData, rawData[position:position+length]...)
-		}
-		fmt.Println(flag)
+			position, length := c.GetEncodedData(chunk>>(spaceTaken+1))
 
-		if flag == 0 {
+			if sizeRaw > c.DictSize {
+				position += sizeRaw - c.DictSize
+			}
+			//fmt.Println("Index: ", i, ", Position: ", position, ", Length: ", length, ", SpaceTaken: ", spaceTaken, ", SizeRaw: ", sizeRaw)
+			rawData = append(rawData,c.GetChunkByte(rawData, position, position + length)...)
+			sizeRaw += length
 			i++
 		}
+
 		spaceTaken++
 	}
 
