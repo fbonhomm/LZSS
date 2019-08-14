@@ -1,7 +1,7 @@
 /**
  * Created by fbonhomm.
  * Email: flo-github@outlook.fr
- * Licence: MIT
+ * License: MIT
  */
 
 package source
@@ -14,13 +14,15 @@ import (
 
 // LZSS config struct for lzss
 type LZSS struct {
-	DictSize int
-	MinMatch int
-	MaxMatch int
-	NumBytes int
-	Position int // set in bits, default: 12, decimal 2048
-	Length   int // set in bits, default: 4, decimal 15
-	Mode	 int
+	Mode          int
+	DictSize      int
+	NumByteEncode int
+	MaxMatch      int
+	MinMatch      int
+	Length        int
+	Position      int
+	MaskLength    uint32
+	MaskPosition  uint32
 }
 
 // Init initialize the config
@@ -36,8 +38,8 @@ func (c *LZSS) Init() {
 	}
 
 	c.DictSize = int(math.Pow(2, float64(c.Position)))
-	c.MaxMatch = int(math.Pow(2, float64(c.Length)) - 1) + c.MinMatch
-	c.NumBytes = int(math.Ceil(float64(c.Position+c.Length) / 8))
+	c.MaxMatch = int(math.Pow(2, float64(c.Length))-1) + c.MinMatch
+	c.NumByteEncode = int(math.Ceil(float64(c.Position+c.Length) / 8))
 
 	if c.MinMatch > c.MaxMatch {
 		log.Fatal("The minimal value cannot be above the maximal value.")
@@ -45,9 +47,14 @@ func (c *LZSS) Init() {
 	if math.Mod(float64(c.Position+c.Length), 8) != 0 {
 		log.Panic("Your Position and Length choose is not optimal.")
 	}
-	if c.NumBytes > 4 {
+	if c.NumByteEncode > 4 {
 		log.Fatal("This program manage that 4 byte encoding.")
 	}
+
+	totalBits := int(math.Pow(2, float64(8*c.NumByteEncode)))
+
+	c.MaskPosition = uint32(math.Pow(2, float64(c.Position))) - 1
+	c.MaskLength = uint32(totalBits) - c.MaskPosition - 1
 }
 
 // Compress choose good mode for compression

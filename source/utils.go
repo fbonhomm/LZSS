@@ -1,26 +1,24 @@
 /**
  * Created by fbonhomm
  * Email: flo-github@outlook.fr
- * Licence: MIT
+ * License: MIT
  */
 
 package source
 
-import "encoding/binary"
-
 // PutUint32ToBuf convert uint32 to []byte
-func (c *LZSS) PutUint32ToBuf(x uint32) ([]byte, int) {
-	i := 0
-	buf := make([]byte, binary.MaxVarintLen32)
+func (c *LZSS) PutUint32ToBuf(x uint32) (buffer []byte, nbWrite int) {
+	nbWrite = 0
+	buffer = make([]byte, 4)
 
 	for x > 0xFF {
-		buf[i] = byte(x)
+		buffer[nbWrite] = byte(x)
 		x >>= 8
-		i++
+		nbWrite++
 	}
-	buf[i] = byte(x)
+	buffer[nbWrite] = byte(x)
 
-	return buf, i + 1
+	return buffer, nbWrite + 1
 }
 
 // PutByteToUint32 convert []byte to uint32

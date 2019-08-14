@@ -1,7 +1,7 @@
 /**
  * Created by fbonhomm.
  * Email: flo-github@outlook.fr
- * Licence: MIT
+ * License: MIT
  */
 
 package source
@@ -23,11 +23,11 @@ func GetFlag(chunk, spaceTaken uint32) int {
 }
 
 // GetEncodedData return feature encoded pattern
-func (c *LZSS) GetEncodedData(chunk uint32) (int, int) {
-	position := chunk & 0x0FFF
-	length := (chunk&0xF000)>>uint32(c.Position) + uint32(c.MinMatch)
+func (c *LZSS) GetEncodedData(chunk uint32) (position, length int) {
+	position = int(chunk & c.MaskPosition /* 0x0FFF */)
+	length = int((chunk&c.MaskLength /*0xF000*/)>>uint32(c.Position) + uint32(c.MinMatch))
 
-	return int(position), int(length)
+	return position, length
 }
 
 // DecompressMode0 decompress in lzss with mode 0
@@ -49,20 +49,21 @@ func (c *LZSS) DecompressMode0(compressData []byte) []byte {
 		chunk := c.PutByteToUint32(c.GetChunkByte(compressData, i, i+4))
 		flag := GetFlag(chunk, spaceTaken)
 
+		chunk >>= spaceTaken + 1
+
 		if flag == 1 {
-			rawData = append(rawData, byte(chunk>>(spaceTaken+1)))
+			rawData = append(rawData, byte(chunk))
 			sizeRaw++
 		} else {
 			if i+1 >= compressDataSize {
 				break
 			}
-			position, length := c.GetEncodedData(chunk>>(spaceTaken+1))
+			position, length := c.GetEncodedData(chunk)
 
 			if sizeRaw > c.DictSize {
 				position += sizeRaw - c.DictSize
 			}
-			//fmt.Println("Index: ", i, ", Position: ", position, ", Length: ", length, ", SpaceTaken: ", spaceTaken, ", SizeRaw: ", sizeRaw)
-			rawData = append(rawData,c.GetChunkByte(rawData, position, position + length)...)
+			rawData = append(rawData, c.GetChunkByte(rawData, position, position+length)...)
 			sizeRaw += length
 			i++
 		}
