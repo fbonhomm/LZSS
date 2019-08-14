@@ -25,6 +25,7 @@ Les autres modes sont des variantes.
 
 ## Table of Contents
 1. [Mode0](#mode0)
+2. [Mode1](#mode1)
 
 ## Mode0
 
