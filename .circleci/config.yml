@@ -4,8 +4,6 @@ jobs:
     working_directory: /go/src/github.com/fbonhomm/Simple-LZSS
     docker:
       - image: circleci/golang:1.12
-    environment:
-      PATH: $PATH:/go/bin
     steps:
       - checkout
       - run:
@@ -13,7 +11,7 @@ jobs:
           command: 'go get -u github.com/golangci/golangci-lint/cmd/golangci-lint'
       - run:
           name: linter
-          command: 'golangci-lint run ./source'
+          command: '/go/bin/golangci-lint run ./source'
       - run:
           name: test
           command: 'go test -v ./test'
