@@ -1,3 +1,9 @@
+/**
+ * Created by fbonhomm.
+ * Email: flo-github@outlook.fr
+ * Licence: MIT
+ */
+
 package source
 
 import (
@@ -24,8 +30,8 @@ func (c *LZSS) GetEncodedData(chunk uint32) (int, int) {
 	return int(position), int(length)
 }
 
-// Decompress decompress on using lzss
-func (c *LZSS) Decompress(compressData []byte) []byte {
+// DecompressMode0 decompress in lzss with mode 0
+func (c *LZSS) DecompressMode0(compressData []byte) []byte {
 	compressDataSize := binary.Size(compressData)
 	var rawData []byte
 	var spaceTaken uint32

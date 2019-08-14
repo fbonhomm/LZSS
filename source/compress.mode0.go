@@ -1,8 +1,13 @@
+/**
+ * Created by fbonhomm
+ * Email: flo-github@outlook.fr
+ * Licence: MIT
+ */
+
 package source
 
 import (
 	"encoding/binary"
-	"fmt"
 	"strings"
 )
 
@@ -45,21 +50,8 @@ func (c *LZSS) AddToCompressData(compressData []byte, tmpI uint32, spaceTaken ui
 	return compressData
 }
 
-// RemoveLastElementUseless remove all final element that equal at 0
-func RemoveLastElementUseless(compressData []byte) []byte {
-	for len(compressData) > 0 {
-		if compressData[len(compressData)-1] != 0 {
-			break
-		}
-
-		compressData = compressData[:len(compressData)-1]
-	}
-
-	return compressData
-}
-
-// Compress compress in lzss
-func (c *LZSS) Compress(rawData []byte) []byte {
+// CompressMode0 compress in lzss with mode 0
+func (c *LZSS) CompressMode0(rawData []byte) []byte {
 	rawDataSize := binary.Size(rawData)
 	var compressData []byte
 	var position, length int
@@ -67,7 +59,6 @@ func (c *LZSS) Compress(rawData []byte) []byte {
 
 	c.Init()
 
-	fmt.Println("Compress...")
 	for i := 0; i < rawDataSize; i++ {
 		tmpI = 0
 		length = 0
@@ -99,5 +90,5 @@ func (c *LZSS) Compress(rawData []byte) []byte {
 		spaceTaken++
 	}
 
-	return RemoveLastElementUseless(compressData)
+	return compressData
 }

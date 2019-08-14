@@ -1,7 +1,13 @@
+/**
+ * Created by fbonhomm.
+ * Email: flo-github@outlook.fr
+ * Licence: MIT
+ */
+
 package source
 
 import (
-	"encoding/binary"
+	"fmt"
 	"log"
 	"math"
 )
@@ -14,6 +20,7 @@ type LZSS struct {
 	NumBytes int
 	Position int // set in bits, default: 12, decimal 2048
 	Length   int // set in bits, default: 4, decimal 15
+	Mode	 int
 }
 
 // Init initialize the config
@@ -43,51 +50,24 @@ func (c *LZSS) Init() {
 	}
 }
 
-// PutUint32ToBuf convert uint32 to []byte
-func (c *LZSS) PutUint32ToBuf(x uint32) ([]byte, int) {
-	i := 0
-	buf := make([]byte, binary.MaxVarintLen32)
+// Compress choose good mode for compression
+func (c *LZSS) Compress(rawData []byte) []byte {
+	fmt.Println("Compress...")
 
-	for x > 0xFF {
-		buf[i] = byte(x)
-		x >>= 8
-		i++
+	if c.Mode == 0 {
+		return c.CompressMode0(rawData)
 	}
-	buf[i] = byte(x)
 
-	return buf, i + 1
+	return c.CompressMode0(rawData)
 }
 
-// PutByteToUint32 convert []byte to uint32
-func (c *LZSS) PutByteToUint32(data []byte) uint32 {
-	var tmp uint32
+// Decompress choose good mode for decompression
+func (c *LZSS) Decompress(compressData []byte) []byte {
+	fmt.Println("Decompress...")
 
-	if len(data) > 3 {
-		tmp = uint32(data[3]) << 24
-	}
-	if len(data) > 2 {
-		tmp |= uint32(data[2]) << 16
-	}
-	if len(data) > 1 {
-		tmp |= uint32(data[1]) << 8
-	}
-	if len(data) > 0 {
-		tmp |= uint32(data[0])
+	if c.Mode == 0 {
+		return c.DecompressMode0(compressData)
 	}
 
-	return tmp
-}
-
-// GetChunkByte slice byte array without error bound range
-func (c *LZSS) GetChunkByte(data []byte, min, max int) []byte {
-	size := len(data)
-
-	if min < 0 {
-		min = 0
-	}
-
-	if max >= size {
-		return data[min:size]
-	}
-	return data[min:max]
+	return c.DecompressMode0(compressData)
 }
