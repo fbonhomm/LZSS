@@ -19,6 +19,15 @@ Le [LZSS](https://fr.wikipedia.org/wiki/LZSS) (Lempel-Ziv-Storer-Szymanski) est 
 
 Il utilise la methode de fenetre glissante.
 
+Il y a plusieurs mode, le mode 0 explique le fonctionnement du LZSS par default.
+
+Les autres modes sont des variantes.
+
+## Table of Contents
+1. [Mode0](#mode0)
+
+## Mode0
+
 #### Example
 exemple avec la phrase: "je suis ici et je suis la-bas" de 29 .
 
