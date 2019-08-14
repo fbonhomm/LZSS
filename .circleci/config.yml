@@ -7,8 +7,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install golangci-lint
-          command: 'go get -u github.com/golangci/golangci-lint/cmd/golangci-lint'
+          name: install module
+          command: 'go mod download'
       - run:
           name: linter
           command: '/go/bin/golangci-lint run ./source'
