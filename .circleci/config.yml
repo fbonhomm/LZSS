@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: install golangci-lint
-          command: 'go vet ./...; go get -u github.com/golangci/golangci-lint/cmd/golangci-lint;go get github.com/stretchr/testify'
+          command: 'go get -u github.com/golangci/golangci-lint/cmd/golangci-lint;go get github.com/stretchr/testify'
       - run:
           name: linter
           command: '/go/bin/golangci-lint run ./source'
