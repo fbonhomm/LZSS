@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    working_directory: /go/src/github.com/fbonhomm/Simple-LZSS
+    docker:
+      - image: circleci/golang:1.12
+    environment:
+      PATH: $PATH:/go/bin
+    steps:
+      - checkout
+      - run:
+          name: install golangci-lint
+          command: 'go get -u github.com/golangci/golangci-lint/cmd/golangci-lint'
+      - run:
+          name: linter
+          command: 'golangci-lint run ./source'
+      - run:
+          name: test
+          command: 'go test -v ./test'
+
