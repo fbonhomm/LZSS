@@ -10,6 +10,7 @@ Les autres modes sont des variantes.
 ## Table of Contents
 1. [Mode0](#mode0)
 2. [Mode1](#mode1)
+2. [Mode2](#mode2)
 
 ## Mode0
 
@@ -75,4 +76,4 @@ Le principe est le meme, mais au lieu de mettre un flag a chaque octet, on les r
 11111111 si cette octet est present au debut du fichier, alors les 8 prochains octets sont non-encoded
 ``` 
 
-![alt tag](assets/image3.png) 
+![alt tag](assets/image3.png)
