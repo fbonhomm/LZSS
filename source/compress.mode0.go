@@ -7,23 +7,9 @@
 package source
 
 import (
-	"bytes"
 	"encoding/binary"
+	"math"
 )
-
-// SearchPattern search the maximal substring length
-func (c *LZSS) SearchPattern(data, pattern []byte) (position, length int) {
-	length = len(pattern)
-
-	for ; length >= c.MinMatch; length-- {
-		position = bytes.Index(data, pattern[:length])
-
-		if position != -1 {
-			return position, length
-		}
-	}
-	return 0, 0
-}
 
 // AddToCompressData add encoded data in final byte array
 func (c *LZSS) AddToCompressData(compressData []byte, tmpU, spaceTaken uint32, encoded bool) []byte {
@@ -54,19 +40,19 @@ func (c *LZSS) CompressMode0(rawData []byte) []byte {
 	var compressData []byte
 	var spaceTaken uint32
 
-	c.Init()
 	for i := 0; i < rawDataSize; i++ {
 		var position, length int
 		var tmpU uint32
 
-		if spaceTaken == 8 {
+		if spaceTaken == uint32(8 * c.NumByteFlags) {
 			spaceTaken = 0
 		}
 
 		if i >= c.MinMatch {
-			position, length = c.SearchPattern(
-				c.GetChunkByte(rawData, i-c.DictSize, i),
-				c.GetChunkByte(rawData, i, i+c.MaxMatch))
+			position, length = c.SearchBytePattern(
+				c.GetChunkByte(rawData, i-c.DictSize, i+c.MaxMatch),
+				c.GetChunkByte(rawData, i, i+c.MaxMatch),
+				i - int(math.Max(float64(i-c.DictSize), 0)))
 		}
 
 		if length == 0 {
@@ -75,6 +61,13 @@ func (c *LZSS) CompressMode0(rawData []byte) []byte {
 			tmpU++
 			compressData = c.AddToCompressData(compressData, tmpU, spaceTaken, false)
 		} else {
+			if c.PositionMode == "relative" {
+				if i > c.DictSize {
+					position = int(math.Abs(float64(c.DictSize - position)))
+				} else {
+					position = int(math.Abs(float64(i - position)))
+				}
+			}
 			tmpU = uint32(length-c.MinMatch) << uint32(c.Position)
 			tmpU += uint32(position)
 			tmpU <<= 1
