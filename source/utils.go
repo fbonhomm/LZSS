@@ -6,6 +6,10 @@
 
 package source
 
+import (
+	"bytes"
+)
+
 // PutUint32ToBuf convert uint32 to []byte
 func (c *LZSS) PutUint32ToBuf(x uint32) (buffer []byte, nbWrite int) {
 	nbWrite = 0
@@ -53,4 +57,24 @@ func (c *LZSS) GetChunkByte(data []byte, min, max int) []byte {
 		return data[min:size]
 	}
 	return data[min:max]
+}
+
+// SearchBytePattern search the maximal substring length
+func (c *LZSS) SearchBytePattern(data, pattern []byte, excludeIndex int) (position, length int) {
+	for length = len(pattern); length >= c.MinMatch; length-- {
+		position = bytes.Index(data, pattern[:length])
+
+		if position < excludeIndex && position != -1 {
+			return position, length
+		}
+	}
+	return 0, 0
+}
+
+// GetEncodedData return feature encoded pattern
+func (c *LZSS) GetEncodedData(chunk uint32) (position, length int) {
+	position = int(chunk & c.MaskPosition /* 0x0FFF */)
+	length = int((chunk&c.MaskLength /*0xF000*/)>>uint32(c.Position) + uint32(c.MinMatch))
+
+	return position, length
 }
