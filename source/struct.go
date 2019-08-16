@@ -7,7 +7,6 @@
 package source
 
 import (
-	"fmt"
 	"log"
 	"math"
 )
@@ -19,7 +18,6 @@ type LZSS struct {
 	PositionMode  string
 	NumByteEncode int
 	NumByteFlags  int
-	NumByteRaw    int
 	MaxMatch      int
 	MinMatch      int
 	Length        int
@@ -45,11 +43,8 @@ func (c *LZSS) Init() {
 	if c.NumByteFlags == 0 {
 		c.NumByteFlags = 1
 	}
-	if c.NumByteRaw == 0 {
-		c.NumByteRaw = 1
-	}
 
-	c.DictSize = int(math.Pow(2, float64(c.Position)))
+	c.DictSize = int(math.Pow(2, float64(c.Position)))-1
 	c.MaxMatch = int(math.Pow(2, float64(c.Length))-1) + c.MinMatch
 	c.NumByteEncode = int(math.Ceil(float64(c.Position+c.Length) / 8))
 
@@ -71,11 +66,14 @@ func (c *LZSS) Init() {
 
 // Compress choose good mode for compression
 func (c *LZSS) Compress(rawData []byte) []byte {
-	fmt.Println("Compress...")
+	// fmt.Println("Compress...")
 
 	c.Init()
 	if c.Mode == 1 {
 		return c.CompressMode1(rawData)
+	}
+	if c.Mode == 2 {
+		return c.CompressMode2(rawData)
 	}
 
 	return c.CompressMode0(rawData)
@@ -83,7 +81,7 @@ func (c *LZSS) Compress(rawData []byte) []byte {
 
 // Decompress choose good mode for decompression
 func (c *LZSS) Decompress(compressData []byte) []byte {
-	fmt.Println("Decompress...")
+	// fmt.Println("Decompress...")
 
 	c.Init()
 	if c.Mode == 1 {
