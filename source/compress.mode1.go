@@ -16,15 +16,18 @@ func (c *LZSS) CompressMode1(rawData []byte) []byte {
 	rawDataSize := binary.Size(rawData)
 	var compressData, buffer []byte
 	var flags, spaceTaken uint32
+	var begin int
 
 	for i := 0; i < rawDataSize; i++ {
 		var position, length int
 
 		if i >= c.MinMatch {
+			begin = int(math.Max(float64(i-(c.DictSize)), 0))
+
 			position, length = c.SearchBytePattern(
-				c.GetChunkByte(rawData, i-c.DictSize, i+c.MaxMatch),
+				c.GetChunkByte(rawData, begin, i+c.MaxMatch),
 				c.GetChunkByte(rawData, i, i+c.MaxMatch),
-				i - int(math.Max(float64(i-c.DictSize), 0)))
+				i-begin)
 		}
 
 		if length == 0 {
@@ -32,12 +35,11 @@ func (c *LZSS) CompressMode1(rawData []byte) []byte {
 			flags |= uint32(math.Pow(2, float64(spaceTaken)))
 		} else {
 			if c.PositionMode == "relative" {
-				if i > c.DictSize {
-					position = int(math.Abs(float64(c.DictSize - position)))
-				} else {
-					position = int(math.Abs(float64(i - position)))
-				}
+				position = (i-begin) - position
 			}
+		// 	if i < 200 {
+		// 		fmt.Println(position, length)
+		// 	}
 			tmpU := uint32(length-c.MinMatch) << uint32(c.Position)
 			tmpU += uint32(position)
 			tmpB, _ := c.PutUint32ToBuf(tmpU)
