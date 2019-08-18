@@ -7,20 +7,17 @@
 package source
 
 import (
-	"encoding/binary"
 	"math"
 )
 
 // CompressMode1 compress in lzss with mode 1
 func (c *LZSS) CompressMode1(rawData []byte) []byte {
-	rawDataSize := binary.Size(rawData)
+	var rawDataSize = len(rawData)
 	var compressData, buffer []byte
 	var flags, spaceTaken uint32
-	var begin int
+	var begin, position, length int
 
 	for i := 0; i < rawDataSize; i++ {
-		var position, length int
-
 		if i >= c.MinMatch {
 			begin = int(math.Max(float64(i-(c.DictSize)), 0))
 
@@ -34,27 +31,22 @@ func (c *LZSS) CompressMode1(rawData []byte) []byte {
 			buffer = append(buffer, rawData[i])
 			flags |= uint32(math.Pow(2, float64(spaceTaken)))
 		} else {
-			if c.PositionMode == "relative" {
-				position = (i-begin) - position
+			if c.PositionMode == RELATIVE {
+				position -= i - begin
 			}
-		// 	if i < 200 {
-		// 		fmt.Println(position, length)
-		// 	}
-			tmpU := uint32(length-c.MinMatch) << uint32(c.Position)
-			tmpU += uint32(position)
-			tmpB, _ := c.PutUint32ToBuf(tmpU)
+			tmpU := (uint32(length-c.MinMatch) << uint32(c.Position)) + uint32(position)
+			tmpB, _ := c.PutUint32ToByte(tmpU)
 			buffer = append(buffer, tmpB[:2]...)
 			i += length - 1
 		}
 
 		spaceTaken++
-		if spaceTaken == 8 * uint32(c.NumByteFlags) || i + 1 >= rawDataSize {
-			tmpB, _ := c.PutUint32ToBuf(flags)
-			buffer = append(tmpB[:c.NumByteFlags], buffer...)
+		if spaceTaken == 8 || i+1 >= rawDataSize {
+			tmpB, _ := c.PutUint32ToByte(flags)
+			buffer = append(tmpB[:1], buffer...)
 			compressData = append(compressData, buffer...)
 			buffer = buffer[:0]
-			flags = 0
-			spaceTaken = 0
+			flags, spaceTaken = 0, 0
 		}
 	}
 

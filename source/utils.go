@@ -10,8 +10,8 @@ import (
 	"bytes"
 )
 
-// PutUint32ToBuf convert uint32 to []byte
-func (c *LZSS) PutUint32ToBuf(x uint32) (buffer []byte, nbWrite int) {
+// PutUint32ToByte convert uint32 to []byte
+func (c *LZSS) PutUint32ToByte(x uint32) (buffer []byte, nbWrite int) {
 	nbWrite = 0
 	buffer = make([]byte, 4)
 
@@ -43,6 +43,20 @@ func (c *LZSS) PutByteToUint32(data []byte) uint32 {
 	}
 
 	return tmp
+}
+
+// CountBitToZero convert []byte to uint32
+func (c *LZSS) CountBitToZero(n byte) uint32 {
+	var count uint32
+
+	for i := 0; i < 8; i++ {
+		if (n & 1) == 0 {
+			count++
+		}
+		n >>= 1
+	}
+
+	return count
 }
 
 // GetChunkByte slice byte array without error bound range

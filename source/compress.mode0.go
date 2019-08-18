@@ -7,23 +7,21 @@
 package source
 
 import (
-	"encoding/binary"
 	"math"
 )
 
 // AddToCompressData add encoded data in final byte array
-func (c *LZSS) AddToCompressData(compressData []byte, tmpU, spaceTaken uint32, encoded bool) []byte {
-	length := len(compressData)
+func (c *LZSS) AddToCompressData(compressData []byte, tmpU, flags uint32, encoded bool) []byte {
+	var length = len(compressData)
 
-	if spaceTaken != 0 {
+	if flags != 0xFF {
 		lastElement := compressData[length-1]
 		compressData = compressData[:length-1]
 
-		tmpU <<= spaceTaken
-		tmpU += uint32(lastElement)
+		tmpU = (tmpU << c.CountBitToZero(byte(flags))) + uint32(lastElement)
 	}
 
-	tmpB, _ := c.PutUint32ToBuf(tmpU)
+	tmpB, _ := c.PutUint32ToByte(tmpU)
 
 	if encoded {
 		tmpB = tmpB[:3]
@@ -36,32 +34,30 @@ func (c *LZSS) AddToCompressData(compressData []byte, tmpU, spaceTaken uint32, e
 
 // CompressMode0 compress in lzss with mode 0
 func (c *LZSS) CompressMode0(rawData []byte) []byte {
-	rawDataSize := binary.Size(rawData)
+	var rawDataSize = len(rawData)
 	var compressData []byte
-	var spaceTaken uint32
+	var flags, tmpU uint32
+	var position, length int
 
 	for i := 0; i < rawDataSize; i++ {
-		var position, length int
-		var tmpU uint32
-
-		if spaceTaken == uint32(8 * c.NumByteFlags) {
-			spaceTaken = 0
+		if flags == 0 {
+			flags = 0xFF
 		}
 
 		if i >= c.MinMatch {
+			begin := int(math.Max(float64(i-c.DictSize), 0))
+
 			position, length = c.SearchBytePattern(
-				c.GetChunkByte(rawData, i-c.DictSize, i+c.MaxMatch),
+				c.GetChunkByte(rawData, begin, i+c.MaxMatch),
 				c.GetChunkByte(rawData, i, i+c.MaxMatch),
-				i - int(math.Max(float64(i-c.DictSize), 0)))
+				i-begin)
 		}
 
 		if length == 0 {
-			tmpU = uint32(rawData[i])
-			tmpU <<= 1
-			tmpU++
-			compressData = c.AddToCompressData(compressData, tmpU, spaceTaken, false)
+			tmpU = (uint32(rawData[i]) << 1) + 1
+			compressData = c.AddToCompressData(compressData, tmpU, flags, false)
 		} else {
-			if c.PositionMode == "relative" {
+			if c.PositionMode == RELATIVE {
 				if i > c.DictSize {
 					position = int(math.Abs(float64(c.DictSize - position)))
 				} else {
@@ -69,13 +65,11 @@ func (c *LZSS) CompressMode0(rawData []byte) []byte {
 				}
 			}
 			tmpU = uint32(length-c.MinMatch) << uint32(c.Position)
-			tmpU += uint32(position)
-			tmpU <<= 1
-			compressData = c.AddToCompressData(compressData, tmpU, spaceTaken, true)
+			tmpU = (tmpU + uint32(position)) << 1
+			compressData = c.AddToCompressData(compressData, tmpU, flags, true)
 			i += length - 1
 		}
-
-		spaceTaken++
+		flags >>= 1
 	}
 
 	return compressData
