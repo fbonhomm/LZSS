@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/fbonhomm/Simple-LZSS/tree/master.svg?style=svg)](https://circleci.com/gh/fbonhomm/Simple-LZSS/tree/master)
+
 # LZSS
 
 LZSS implementation in Go
