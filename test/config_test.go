@@ -1,6 +1,6 @@
 package test
 
-import "github.com/fbonhomm/Simple-LZSS/source"
+import "github.com/fbonhomm/LZSS/source"
 
 var LzssM0 = source.LZSS{}
 var LzssM1 = source.LZSS{Mode:1}

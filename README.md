@@ -6,7 +6,7 @@ LZSS implementation in Go
 
 ## Usage
 ```go
-import "github.com/fbonhomm/Simple-LZSS/source"
+import "github.com/fbonhomm/LZSS/source"
 
 var Lzss = source.LZSS{Mode: 1, PositionMode: 0}
 

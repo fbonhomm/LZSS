@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/fbonhomm/Simple-LZSS/source"
+	"github.com/fbonhomm/LZSS/source"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"log"

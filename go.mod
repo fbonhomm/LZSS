@@ -1,4 +1,4 @@
-module github.com/fbonhomm/Simple-LZSS
+module github.com/fbonhomm/LZSS
 
 go 1.12
 
