@@ -11,7 +11,7 @@ import (
 func Test_so3_mode1(t *testing.T) {
 	var lzss = source.LZSS{
 		Mode: 1,
-		PositionMode: "relative",
+		PositionMode: 1,
 	}
 
 	fileC, err := ioutil.ReadFile("./fixture/lzss.so3.compress")
@@ -29,7 +29,7 @@ func Test_so3_mode1(t *testing.T) {
 func Test_so3_cd_mode1(t *testing.T) {
 	var lzss = source.LZSS{
 		Mode: 1,
-		PositionMode: "relative",
+		PositionMode: 1,
 	}
 
 	fileD, err := ioutil.ReadFile("./fixture/lzss.so3.decompress")
