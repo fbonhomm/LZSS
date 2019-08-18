@@ -32,7 +32,7 @@ func (c *LZSS) CompressMode1(rawData []byte) []byte {
 			flags |= uint32(math.Pow(2, float64(spaceTaken)))
 		} else {
 			if c.PositionMode == RELATIVE {
-				position -= i - begin
+				position = (i - begin) - position
 			}
 			tmpU := (uint32(length-c.MinMatch) << uint32(c.Position)) + uint32(position)
 			tmpB, _ := c.PutUint32ToByte(tmpU)

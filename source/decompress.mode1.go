@@ -6,7 +6,9 @@
 
 package source
 
-import "math"
+import (
+	"math"
+)
 
 // DecompressMode1 decompress in lzss with mode 1
 func (c *LZSS) DecompressMode1(compressData []byte) []byte {
