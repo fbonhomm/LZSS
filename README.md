@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/fbonhomm/Simple-LZSS/tree/master.svg?style=svg)](https://circleci.com/gh/fbonhomm/Simple-LZSS/tree/master)
+[![CircleCI](https://circleci.com/gh/fbonhomm/LZSS/tree/master.svg?style=svg)](https://circleci.com/gh/fbonhomm/LZSS/tree/master)
 
 # LZSS
 
