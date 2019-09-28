@@ -27,8 +27,8 @@ rawData := Lzss.Decompress(dataCompress)
 
 ## LZSS Explications
 
- - [Explications en francais](FR-EXPLICATION.md)
- - [English Explications](EN-EXPLICATION.md)
+ - [Explications en francais](docs/FR-EXPLICATION.md)
+ - [English Explications](docs/EN-EXPLICATION.md)
 
 ## Ressources
   - https://www.romhacking.net/utilities/819/
