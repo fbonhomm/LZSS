@@ -1,8 +1,11 @@
 [![CircleCI](https://circleci.com/gh/fbonhomm/LZSS/tree/master.svg?style=svg)](https://circleci.com/gh/fbonhomm/LZSS/tree/master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 # LZSS
 
-LZSS implementation in Go
+[EN] Implementation of the LZ77 compression algorithm
+
+[FR] Implémentation de l'algorithme de compression LZ77
 
 ## Usage
 ```go
@@ -25,10 +28,10 @@ rawData := Lzss.Decompress(dataCompress)
   - 0 set count position to started begin dictionary (default)
   - 1 set count position to started current index
 
-## LZSS Explications
+## Explanation
 
- - [Explications en francais](docs/FR-EXPLICATION.md)
- - [English Explications](docs/EN-EXPLICATION.md)
+ - [English](docs/EN-EXPLICATION.md)
+ - [Français](docs/FR-EXPLICATION.md)
 
 ## Ressources
   - https://www.romhacking.net/utilities/819/
