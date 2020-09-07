@@ -3,9 +3,9 @@
 
 # LZSS
 
-[EN] Implementation of the LZ77 compression algorithm
+[EN] Implementation of the LZSS compression algorithm
 
-[FR] Implémentation de l'algorithme de compression LZ77
+[FR] Implémentation de l'algorithme de compression LZSS
 
 ## Usage
 ```go
