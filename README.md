@@ -30,8 +30,8 @@ rawData := Lzss.Decompress(dataCompress)
 
 ## Explanation
 
- - [English](docs/EN-EXPLICATION.md)
- - [Français](docs/FR-EXPLICATION.md)
+ - [English](documentation/explanation.en.md)
+ - [Français](documentation/explanation.fr.md)
 
 ## Ressources
   - https://www.romhacking.net/utilities/819/
