@@ -11,7 +11,7 @@ import (
 )
 
 // DecompressMode1 decompress in lzss with mode 1
-func (c *LZSS) DecompressMode1(compressData []byte) []byte {
+func (c *LZSS) DecompressMode1(compressData []byte) ([]byte, error) {
 	var compressDataSize = len(compressData)
 	var rawData []byte
 	var flags uint32
@@ -53,5 +53,5 @@ func (c *LZSS) DecompressMode1(compressData []byte) []byte {
 		}
 	}
 
-	return rawData
+	return rawData, nil
 }

@@ -7,7 +7,7 @@
 package source
 
 // DecompressMode0 decompress in lzss with mode 0
-func (c *LZSS) DecompressMode0(compressData []byte) []byte {
+func (c *LZSS) DecompressMode0(compressData []byte) ([]byte, error) {
 	var compressDataSize = len(compressData)
 	var rawData []byte
 	var spaceTaken, chunk, flag uint32
@@ -54,5 +54,5 @@ func (c *LZSS) DecompressMode0(compressData []byte) []byte {
 		}
 	}
 
-	return rawData
+	return rawData, nil
 }

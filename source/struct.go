@@ -66,7 +66,7 @@ func (c *LZSS) Compress(rawData []byte) []byte {
 }
 
 // Decompress choose good mode for decompression
-func (c *LZSS) Decompress(compressData []byte) []byte {
+func (c *LZSS) Decompress(compressData []byte) ([]byte, error) {
 	c.Init()
 	if c.Mode == 1 {
 		return c.DecompressMode1(compressData)
