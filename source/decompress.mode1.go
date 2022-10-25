@@ -7,6 +7,7 @@
 package source
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -25,6 +26,10 @@ func (c *LZSS) DecompressMode1(compressData []byte) ([]byte, error) {
 		}
 
 		if (flags & 1) == 1 {
+			if i >= len(compressData) {
+				return nil, fmt.Errorf("EOF")
+			}
+
 			rawData = append(rawData, compressData[i])
 			sizeRaw++
 		} else {
@@ -45,6 +50,9 @@ func (c *LZSS) DecompressMode1(compressData []byte) ([]byte, error) {
 			} else {
 				position += int(math.Max(float64(sizeRaw-c.DictSize), 0))
 				for j := 0; j < length; j++ {
+					if position+j >= len(rawData) {
+						return nil, fmt.Errorf("EOF")
+					}
 					rawData = append(rawData, rawData[position+j])
 				}
 				sizeRaw += length

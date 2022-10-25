@@ -6,6 +6,8 @@
 
 package source
 
+import "fmt"
+
 // DecompressMode0 decompress in lzss with mode 0
 func (c *LZSS) DecompressMode0(compressData []byte) ([]byte, error) {
 	var compressDataSize = len(compressData)
@@ -40,6 +42,9 @@ func (c *LZSS) DecompressMode0(compressData []byte) ([]byte, error) {
 					position += sizeRaw - c.DictSize
 				}
 				for j := 0; j < length; j++ {
+					if position+j >= len(rawData) {
+						return nil, fmt.Errorf("EOF")
+					}
 					rawData = append(rawData, rawData[position+j])
 				}
 				sizeRaw += length
