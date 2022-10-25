@@ -37,3 +37,25 @@ func Test_decompress_mode1_simple_string_with_duplicate(t *testing.T) {
 	assert.Equal(t, len(DecSimpleStringWithDuplicate), len(rawData))
 	assert.Equal(t, DecSimpleStringWithDuplicate, rawData)
 }
+
+// in order to find crashes in Decompress()
+func FuzzDecompressMode0(f *testing.F) {
+	testcases := [][]byte{ComSimpleStringWithoutDuplicateMode0, ComSimpleStringWithDuplicateMode0}
+	for _, tc := range testcases {
+		f.Add(tc)
+	}
+	f.Fuzz(func(t *testing.T, orig []byte) {
+		_, _ = LzssM0.Decompress(orig)
+	})
+}
+
+// in order to find crashes in Decompress()
+func FuzzDecompressMode1(f *testing.F) {
+	testcases := [][]byte{ComSimpleStringWithoutDuplicateMode1, ComSimpleStringWithDuplicateMode1}
+	for _, tc := range testcases {
+		f.Add(tc)
+	}
+	f.Fuzz(func(t *testing.T, orig []byte) {
+		_, _ = LzssM1.Decompress(orig)
+	})
+}
