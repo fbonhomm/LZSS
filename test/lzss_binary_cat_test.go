@@ -1,11 +1,12 @@
 package test
 
 import (
-	"github.com/fbonhomm/LZSS/source"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"log"
 	"testing"
+
+	"github.com/fbonhomm/LZSS/source"
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_binary_cat_mode0(t *testing.T) {
@@ -18,8 +19,9 @@ func Test_binary_cat_mode0(t *testing.T) {
 	}
 
 	compressData := Lzss.Compress(file)
-	rawData := Lzss.Decompress(compressData)
+	rawData, err := Lzss.Decompress(compressData)
 
+	assert.Nil(t, err)
 	assert.Equal(t, file, rawData)
 }
 
@@ -33,8 +35,9 @@ func Test_binary_cat_mode0_and_relative(t *testing.T) {
 	}
 
 	compressData := Lzss.Compress(file)
-	rawData := Lzss.Decompress(compressData)
+	rawData, err := Lzss.Decompress(compressData)
 
+	assert.Nil(t, err)
 	assert.Equal(t, file, rawData)
 }
 
@@ -48,8 +51,9 @@ func Test_binary_cat_mode1(t *testing.T) {
 	}
 
 	compressData := Lzss.Compress(file)
-	rawData := Lzss.Decompress(compressData)
+	rawData, err := Lzss.Decompress(compressData)
 
+	assert.Nil(t, err)
 	assert.Equal(t, file, rawData)
 }
 
@@ -63,7 +67,8 @@ func Test_binary_cat_mode1_and_relative(t *testing.T) {
 	}
 
 	compressData := Lzss.Compress(file)
-	rawData := Lzss.Decompress(compressData)
+	rawData, err := Lzss.Decompress(compressData)
 
+	assert.Nil(t, err)
 	assert.Equal(t, file, rawData)
 }
